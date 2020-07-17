@@ -284,8 +284,8 @@ class Node : public Executable {
   bool ProcessDSGuardNetworkInfoUpdate(const bytes& message,
                                        unsigned int offset, const Peer& from);
 
-  bool ProcessNewShardGuardNetworkInfo(const bytes& message,
-                                       unsigned int offset, const Peer& from);
+  bool ProcessNewShardNodeNetworkInfo(const bytes& message, unsigned int offset,
+                                      const Peer& from);
 
   // bool ProcessCreateAccounts(const bytes & message,
   // unsigned int offset, const Peer & from);
@@ -500,6 +500,11 @@ class Node : public Executable {
 
   // whether txns dist window open
   std::atomic<bool> m_txn_distribute_window_open{};
+
+  // stores map of shardnodepubkey and n/w info change request count (for
+  // current dsepoch only)
+  std::mutex m_mutexIPChangeRequestStore;
+  std::map<PubKey, uint32_t> m_ipChangeRequestStore;
 
   /// Constructor. Requires mediator reference to access DirectoryService and
   /// other global members.
@@ -729,7 +734,9 @@ class Node : public Executable {
 
   void WaitForNextTwoBlocksBeforeRejoin();
 
-  bool UpdateShardGuardIdentity();
+  bool UpdateShardNodeIdentity();
+
+  bool ValidateAndUpdateIPChangeRequestStore(const PubKey& shardNodePubkey);
 
  private:
   static std::map<NodeState, std::string> NodeStateStrings;
