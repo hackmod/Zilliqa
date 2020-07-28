@@ -49,9 +49,20 @@ addons:
     - libxml2-utils
     - python-pip
 
-script:
-  - ./scripts/ci_build.sh;
-  - cmake --build build --target package -- -j4
+script: |
+    zilliqaMajorLine=2
+    zilliqaMinorLine=4
+    zilliqaFixLine=6
+    zilliqaDSLine=8
+    zilliqaMajor="$(sed -n ${zilliqaMajorLine}p VERSION)"
+    zilliqaMinor="$(sed -n ${zilliqaMinorLine}p VERSION)"
+    zilliqaFix="$(sed -n ${zilliqaFixLine}p VERSION)"
+    zilliqaDS="$(sed -n ${zilliqaDSLine}p VERSION)"
+    zilliqaCommit="$(git describe --always)"
+    newVer=${zilliqaMajor}.${zilliqaMinor}.${zilliqaFix}.${zilliqaDS}.${zilliqaCommit}
+    export ZIL_VER=${newVer}
+    ./scripts/ci_build.sh
+    cmake --build build --target package -- -j4
 
 # Code coverage is currently only implemented for GCC builds, so OSX is currently excluded from reporting
 after_success:
