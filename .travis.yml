@@ -51,7 +51,18 @@ addons:
 
 script:
   - ./scripts/ci_build.sh;
+  - cmake --build build --target package -- -j4
 
 # Code coverage is currently only implemented for GCC builds, so OSX is currently excluded from reporting
 after_success:
   - ./scripts/ci_report_coverage.sh
+
+deploy:
+  - provider: releases
+    api_key:
+      secure: "URkCxi2Ekjw+gJc3Di38mkvXHXeaBgVf99cIPMsD3Oh3Ac6Ire4KYX3pqIDyO4SoQeSrxmJKyvI0ZFcjvd/B9cWF09BWExPS812ttPxJO1yoiDPVNAdOI4zoaqN8ffNq6bXguILx++GhlpCS+1W3yi148OowlC4WImSxwQLIpDK7z4THzmAazFC2r7ojTvfz92oNcWhET5yymQkDDEk6o+3AOAaMlOwMuXRUyOcd1+hqVTnkrafHAStAwec5JibxmfFqxpoGkDWRhD6OdoHncs0KCih2ZnePoFhOlc1u88av9kOYVcfLYpHI77wyqTmn28s/s1in8Mxy2n3Yz0AgAkbklpe3h2EIKLsuUX1fHgZxEC7qeWo4eJfPUnD1fthYvk7i8dBcMOpLq9QdphD6R+i04ZixBuRfO0q+Lopt+D3gk5xVofgUUNAYbjigTf9iXNo/g9wmA9rkVeK9HcdWsAQdf2jsEYVmxgIkkKx58HoCyCxu5sDVkbvhRwAMRp9Lra542jvTlhnKRL/sGir/z531lk62fGmGsEpxlMrdett4Ac+ZBf0l+pV3lsDeuGFlSrw82/k2qwCOP5kDjiE9557mHnBQ1ew5V+J50jSm39Bhw0qGptchW2kcvNRlsF1cZ85B+vYpOnh5Z9eGkOyZGokrIaeYwtuAe0wdayKnSpg="
+    file_glob: true
+    file: build/*.deb
+    skip_cleanup: true
+    on:
+      tags: true
